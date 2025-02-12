@@ -1,16 +1,20 @@
 import {useEffect, useRef, useState} from "react";
 
-import Button from "./UI/Button.tsx";
+import Button from "../UI/Button.tsx";
 import {TiLocationArrow} from "react-icons/ti";
 import {useGSAP} from "@gsap/react";
 import gsap from 'gsap';
 import {ScrollTrigger} from "gsap/ScrollTrigger";
+import useHook from "../hooks/useHook.ts";
 
 gsap.registerPlugin(ScrollTrigger);
 const totalVideos = 4;
     let nextIndex = 2;
     let nextIndex1 = 3;
-const words = ['','g<b>a</b>ming', 'ide<b>n</b>tity', 're<b>a</b>lity', 'ag<b>e</b>ntic ai']
+const words = ['','g<b>a</b>ming', 'ide<b>n</b>tity', 're<b>a</b>lity', 'ag<b>e</b>ntic ai'];
+
+
+
 export default  function Hero() {
     const [controlVideo, setControlVideo] = useState({
         currentIndex: 1,
@@ -20,7 +24,9 @@ export default  function Hero() {
     const [isInteractable, setIsInteractable] = useState(true);
     const [loadedVideos, setLoadedVideos] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    // const [isHovered, setIsHovered] = useState(false);
 
+    const sectionRef = useRef<HTMLDivElement>(null);
     const miniVideoContainerRef = useRef<HTMLDivElement>(null);
     const videoFrameRef = useRef<HTMLDivElement>(null);
 
@@ -51,63 +57,131 @@ export default  function Hero() {
         });
     }
 
-    useGSAP(() => {
-        if (!miniVideoContainerRef.current || !isInteractable) return;
-
-        const card = miniVideoContainerRef.current;
-        const bounds = card.getBoundingClientRect();
-
-        // Animation config
-        const config = {
-            rotationStrength: 25,    // Reduced from 15 for subtler effect
-            perspective: 800,       // Increased for more realistic depth
-            smoothing: 0.1,        // Lower = smoother movement
-            scale: 1.02            // Reduced scale effect
-        };
-
-        function animateCard(e: MouseEvent) {
-            const centerX = bounds.left + bounds.width / 2;
-            const centerY = bounds.top + bounds.height / 2;
-
-            // Calculate rotation based on mouse distance from center
-            const rotateY = ((e.clientX - centerX) / bounds.width) * config.rotationStrength;
-            const rotateX = ((e.clientY - centerY) / bounds.height) * -config.rotationStrength;
-
-            gsap.to(card, {
-                rotateX,
-                rotateY,
-                scale: config.scale,
-                duration: config.smoothing,
-                ease: "power2.out",
-                transformPerspective: config.perspective,
-                transformOrigin: "center"
-            });
-        }
-
-        function resetCard() {
-            gsap.to(card, {
-                rotateX: 0,
-                rotateY: 0,
-                scale: 1,
-                duration: 0.4,
-                ease: "power3.out"
-            });
-        }
-
-        card.addEventListener('mousemove', animateCard);
-        card.addEventListener('mouseleave', resetCard);
-
-        return () => {
-            card.removeEventListener('mousemove', animateCard);
-            card.removeEventListener('mouseleave', resetCard);
-        };
-    }, [isInteractable]);
-
     useEffect(() => {
         if (loadedVideos === totalVideos - 1) {
             setIsLoading(false);
         }
     }, [loadedVideos]);
+
+    const refs = {
+        sectionRef,
+        miniVideoContainerRef,
+        nextVideoRef,
+    }
+
+    useHook(refs);
+    // Mouse interaction animations
+    // useGSAP(() => {
+    //     if (!sectionRef.current || !miniVideoContainerRef.current || !nextVideoRef.current) return;
+    //
+    //     const section = sectionRef.current;
+    //     const miniContainer = miniVideoContainerRef.current;
+    //
+    //     const enterAnimation = gsap.timeline({ paused: true })
+    //         .fromTo([miniContainer, nextVideoRef.current], {
+    //             scale: 0,
+    //             delay: 0.5,
+    //         }, {
+    //             scale: 0.5,
+    //             opacity: 1,
+    //             duration: 0.5,
+    //             ease: "power3.out"
+    //         });
+    //
+    //     const config = {
+    //         rotationStrength: 25,
+    //         perspective: 500,
+    //         smoothing: 0.3,
+    //         scale: 1.12
+    //     };
+    //
+    //     let mouseMoveTimeout: number | undefined;
+    //     let isMouseIdle = true;
+    //
+    //     function handleMouseEnter() {
+    //         setIsHovered(true);
+    //         clearTimeout(mouseMoveTimeout);
+    //         isMouseIdle = false;
+    //         enterAnimation.play();
+    //     }
+    //
+    //     function handleMouseLeave() {
+    //         setIsHovered(false);
+    //         clearTimeout(mouseMoveTimeout);
+    //         isMouseIdle = true;
+    //         gsap.to([miniContainer, nextVideoRef.current], {
+    //             scale: 0,
+    //             opacity: 0,
+    //             duration: 0.4,
+    //             ease: "power3.in"
+    //         });
+    //         gsap.to([miniContainer, nextVideoRef.current], {
+    //             rotateX: 0,
+    //             rotateY: 0,
+    //             duration: 0.3
+    //         });
+    //     }
+    //
+    //     function handleMouseMove(e: MouseEvent) {
+    //         if (!isHovered) return;
+    //
+    //         // If mouse was idle and now moving again, restore full animation
+    //         if (isMouseIdle) {
+    //             isMouseIdle = false;
+    //             gsap.to([miniContainer, nextVideoRef.current], {
+    //                 scale: config.scale,
+    //                 opacity: 1,
+    //                 duration: 0.5,
+    //                 ease: "power3.out"
+    //             });
+    //         }
+    //
+    //         // Reset the idle timeout on each mouse move
+    //         clearTimeout(mouseMoveTimeout);
+    //         mouseMoveTimeout = setTimeout(() => {
+    //             if (isHovered) {
+    //                 gsap.to([miniContainer], {
+    //                     scale: 0,
+    //                     opacity: 0,
+    //                     rotateX: 0,
+    //                     rotateY: 0,
+    //                     duration: 0.4,
+    //                     ease: "power3.in"
+    //                 });
+    //                 isMouseIdle = true;
+    //             }
+    //         }, 1500);
+    //
+    //         // Apply rotation
+    //         const bounds = section.getBoundingClientRect();
+    //         const centerX = bounds.left + bounds.width / 2;
+    //         const centerY = bounds.top + bounds.height / 2;
+    //
+    //         const rotateY = ((e.clientX - centerX) / bounds.width) * config.rotationStrength;
+    //         const rotateX = ((e.clientY - centerY) / bounds.height) * -config.rotationStrength;
+    //
+    //         gsap.to([miniContainer, nextVideoRef.current], {
+    //             rotateX,
+    //             rotateY,
+    //             scale: config.scale,
+    //             duration: config.smoothing,
+    //             ease: "power2.out",
+    //             transformPerspective: config.perspective,
+    //             transformOrigin: "center"
+    //         });
+    //     }
+    //
+    //     section.addEventListener('mouseenter', handleMouseEnter);
+    //     section.addEventListener('mouseleave', handleMouseLeave);
+    //     section.addEventListener('mousemove', handleMouseMove);
+    //
+    //     return () => {
+    //         clearTimeout(mouseMoveTimeout);
+    //         section.removeEventListener('mouseenter', handleMouseEnter);
+    //         section.removeEventListener('mouseleave', handleMouseLeave);
+    //         section.removeEventListener('mousemove', handleMouseMove);
+    //     };
+    // }, [isHovered]);
 
     useGSAP(() => {
         if (controlVideo.hasClicked) {
@@ -121,8 +195,8 @@ export default  function Hero() {
                     duration: 0.35,
                     ease: 'power1.inOut',
                     onStart: () => {
-                        if (nextVideoRef.current) {
-                            nextVideoRef.current.play().catch(console.error);
+                        if (nextVideo1Ref.current) {
+                            nextVideo1Ref.current.play().catch(console.error);
                         }
                     },
                     onComplete: () => {
@@ -161,8 +235,8 @@ export default  function Hero() {
                     duration: 0.35,
                     ease: 'power1.inOut',
                     onStart: () => {
-                        if (nextVideo1Ref.current) {
-                            nextVideo1Ref.current.play().catch(console.error);
+                        if (nextVideo2Ref.current) {
+                            nextVideo2Ref.current.play().catch(console.error);
                         }
                     },
                     onComplete: () => {
@@ -192,13 +266,7 @@ export default  function Hero() {
                 scale: 0,
                 duration: 1,
                 ease: 'power1.inOut',
-                delay: 0.45,
-            })
-            gsap.to('#current-video', {
-                opacity: 1,
-                scale: 1,
-                duration: 1,
-                ease: 'power1.inOut',
+                delay: 1,
             })
 
             const tl = gsap.timeline();
@@ -233,28 +301,28 @@ export default  function Hero() {
             }
         }
     }, { dependencies: [controlVideo.currentIndex] });
-    useGSAP(() => {
-        gsap.set('#video-frame', {
-            clipPath: 'polygon(14% 0%, 72% 0%, 90% 90%, 0% 100%)',
-            borderRadius: '0 0 40% 10%',
-        })
-
-        gsap.from('#video-frame', {
-            clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-            borderRadius: '0 0 0 0',
-            ease: 'power1.inOut',
-            scrollTrigger: {
-                trigger: '#video-frame',
-                start: 'center center',
-                end: 'bottom center',
-                scrub: true,
-
-            }
-        })
-    })
+    // useGSAP(() => {
+    //     gsap.set('#video-frame', {
+    //         clipPath: 'polygon(14% 0%, 72% 0%, 90% 90%, 0% 100%)',
+    //         borderRadius: '0 0 40% 10%',
+    //     })
+    //
+    //     gsap.from('#video-frame', {
+    //         clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
+    //         borderRadius: '0 0 0 0',
+    //         ease: 'power1.inOut',
+    //         scrollTrigger: {
+    //             trigger: '#video-frame',
+    //             start: 'center center',
+    //             end: 'bottom center',
+    //             scrub: true,
+    //
+    //         }
+    //     })
+    // })
 
     return (
-        <div className='relative h-dvh w-screen overflow-x-hidden'>
+        <div ref={sectionRef} className='relative h-dvh w-screen overflow-x-hidden'>
             {isLoading && (
                 <div className={'flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50'}>
                     <div className={'three-body' }>
@@ -268,8 +336,8 @@ export default  function Hero() {
                 <div>
                     <div ref={miniVideoContainerRef} className='mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg'>
                         <div onClick={handleMiniVdClick}
-                             className={`origin-center scale-50 opacity-0 transition-all duration-500 delay-200 ease-in
-                             ${isInteractable ? 'hover:scale-100 hover:opacity-100' : ''}`}>
+                             className={`origin-center transition-all duration-500 delay-200 ease-in
+                             `}>
                             <video
                                    loop muted id='current-video'
                                    onLoadedData={handleVideoLoad}
@@ -277,15 +345,15 @@ export default  function Hero() {
                                    ref={nextVideoRef} src={getVideoSrc(upcomingVideoIndex)} />
                         </div>
                     </div>
-                    <video id='next-video' ref={nextVideoRef} src={getVideoSrc(nextIndex)} loop muted
+                    <video id='next-video' ref={nextVideo1Ref} src={getVideoSrc(nextIndex)} loop muted
                     className='absolute-center invisible absolute z-20 size-64 object-cover object-center'
                            onLoadedData={handleVideoLoad}
                     />
-                    <video id='next-video1' ref={nextVideo1Ref} src={getVideoSrc(nextIndex1)} loop muted
+                    <video id='next-video1' ref={nextVideo2Ref} src={getVideoSrc(nextIndex1)} loop muted
                     className='absolute-center invisible absolute z-30 size-64 object-cover object-center'
                            onLoadedData={handleVideoLoad}
                     />
-                    <video ref={nextVideo2Ref} src={getVideoSrc(1)}
+                    <video src={getVideoSrc(1)}
                            autoPlay loop muted onLoadedData={handleVideoLoad}
                            className='absolute left-0 top-0 size-full object-cover object-center'
                     />
