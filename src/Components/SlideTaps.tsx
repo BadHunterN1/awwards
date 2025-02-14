@@ -2,7 +2,6 @@ import Tap from "./UI/Tap.tsx";
 import {motion} from "framer-motion";
 import {useState} from "react";
 import {TiLocationArrow} from "react-icons/ti";
-import Features from "./Features.tsx";
 
 export default  function SlideTaps() {
     const [position, setPosition] = useState({
