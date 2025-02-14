@@ -171,7 +171,7 @@ export default function useHook({sectionRef, miniVideoContainerRef, nextVideoRef
         section.addEventListener('mouseleave', handleMouseLeave);
         section.addEventListener('mousemove', handleMouseMove);
 
-        window.addEventListener('blur', handleDocumentEvents);
+        window.addEventListener('blur-sm', handleDocumentEvents);
         document.addEventListener('mouseleave', handleDocumentEvents);
 
         return () => {
@@ -179,7 +179,7 @@ export default function useHook({sectionRef, miniVideoContainerRef, nextVideoRef
             section.removeEventListener('mouseenter', handleMouseEnter);
             section.removeEventListener('mouseleave', handleMouseLeave);
             section.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('blur', handleDocumentEvents);
+            window.removeEventListener('blur-sm', handleDocumentEvents);
             document.removeEventListener('mouseleave', handleDocumentEvents);
         };
     }, [isHovered]);

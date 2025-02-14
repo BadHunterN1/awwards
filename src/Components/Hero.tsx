@@ -29,7 +29,7 @@ export default  function Hero() {
 
     // currentIndex + 1 and if it more than total videos return to 1
     const upcomingVideoIndex = (controlVideo.currentIndex % totalVideos) + 1;
-    console.log(upcomingVideoIndex)
+
     function getVideoSrc(index: number) {
         return `videos/hero-${index}.mp4`
     }
@@ -76,7 +76,7 @@ export default  function Hero() {
     return (
         <div ref={sectionRef} className='relative h-dvh w-screen overflow-x-hidden'>
             {isLoading && (
-                <div className={'flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50'}>
+                <div className={'flex-center absolute z-100 h-dvh w-screen overflow-hidden bg-violet-50'}>
                     <div className={'three-body' }>
                         <div className={'three-body__dot'}/>
                         <div className={'three-body__dot'}/>
@@ -133,7 +133,7 @@ export default  function Hero() {
                         <p className='text-xl mb-5 max-w-64 font-robert-regular text-blue-100'>
                             Enter The Metagame Layer <br/> Unleash the play Economy
                         </p>
-                        <Button id="watch-trailer" title="Watch Trailer" leftIcon={<TiLocationArrow/>} containerClass='!bg-yellow-300 flex-center gap-1'/>
+                        <Button id="watch-trailer" title="Watch Trailer" leftIcon={<TiLocationArrow/>} containerClass='bg-yellow-300! flex-center gap-1'/>
                     </div>
                 </div>
             </div>
