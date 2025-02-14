@@ -63,7 +63,7 @@ export default function useHook({sectionRef, miniVideoContainerRef, nextVideoRef
             scale: 1.12
         };
 
-        let mouseMoveTimeout: number | undefined;
+        let mouseMoveTimeout: ReturnType<typeof setTimeout> | undefined;
         let isMouseIdle = true;
         let reenterDelay: number | undefined;
 

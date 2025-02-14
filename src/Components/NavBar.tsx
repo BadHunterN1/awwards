@@ -82,7 +82,7 @@ export default  function NavBar() {
                     </div>
                         <div className={'flex h-full items-center'}>
                             <SlideTaps/>
-                            <button onClick={toggleAudio} className={'ml-10 flex items-center space-x-0.5 py-2'}>
+                            <button onClick={toggleAudio} className={'ml-10 flex items-center space-x-0.5 py-2 cursor-pointer'}>
                                 <audio ref={audioRef} className={'hidden'} src={'/audio/loop.mp3'} loop/>
                                 {[1,2,3,4].map(bar => (
                                     <div key={bar} style={{animationDelay: `${bar * 0.1}s`}}
