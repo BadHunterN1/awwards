@@ -4,11 +4,36 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    scroll-behavior: smooth;
+}
 body {
     width: 100dvw;
     overflow-x: hidden;
     background-color: #dfdff0;
     font-family: "General Sans", sans-serif;
+    scroll-behavior: smooth;
+}
+body::-webkit-scrollbar {
+    width: 8px;
+}
+
+body.thin::-webkit-scrollbar {
+    width: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 0px;
+    background: #011142;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -o-border-radius: 0px;
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 0;
+    background-color: none;
 }
 
 @layer base {
@@ -44,7 +69,7 @@ body {
     }
 
     .nav-hover-btn {
-        @apply relative ms-10 font-general text-xs uppercase text-blue-50 after:absolute after:-bottom-0.5 after:left-0 after:h-[2px] after:w-full after:origin-bottom-right after:scale-x-0 after:bg-neutral-800 after:transition-transform after:duration-300 after:ease-[cubic-bezier(0.65_0.05_0.36_1)] hover:after:origin-bottom-left hover:after:scale-x-100 dark:after:bg-white cursor-pointer;
+        @apply relative font-general text-xs lg:text-sm uppercase z-10 flex items-center gap-1 cursor-pointer px-3 py-1.5 md:px-3 md:py-1.5 text-white mix-blend-difference ;
     }
 
     .floating-nav {
@@ -81,7 +106,7 @@ body {
     }
 
     .animated-title {
-        @apply flex flex-col gap-1 text-7xl uppercase leading-[.8] text-white sm:px-32 md:text-[6rem];
+        @apply flex flex-col gap-1 text-5xl md:text-6xl uppercase leading-[.8] text-white sm:px-32 lg:text-[6rem];
     }
 
     .animated-word {
@@ -104,17 +129,17 @@ body {
     }
 
     .story-img-container {
-        @apply relative md:h-dvh h-[90vh] w-full;
+        @apply relative md:h-[77dvh] h-[75vh] w-full;
         filter: url("#flt_tag");
     }
 
     .story-img-mask {
-        @apply absolute left-0 top-0 size-full overflow-hidden md:left-[20%] md:top-[-10%] md:size-4/5;
-        clip-path: polygon(4% 0, 83% 21%, 100% 73%, 0% 100%);
+        @apply absolute left-0 -top-1/4 size-full overflow-hidden md:left-[20%] md:top-[-10%] md:size-4/5;
+        clip-path: polygon(4% 0, 83% 20%, 100% 90%, 0% 100%);
     }
 
     .story-img-content {
-        @apply absolute w-full md:h-dvh h-[50dvh] opacity-100 left-10 top-16 md:left-0 md:top-10 lg:left-[-300px] lg:top-[-100px];
+        @apply absolute w-full 2xl:w-10/12 md:h-dvh h-[50dvh] opacity-100 left-10 top-16 md:left-0 md:top-10 lg:left-[-300px] lg:top-[-100px];
         transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) rotateZ(0) scale(1);
     }
 
@@ -149,7 +174,6 @@ body {
 
 .indicator-line.active {
     animation: indicator-line 0.5s ease infinite;
-    animation-delay: calc(var(--animation-order) * 0.1s);
 }
 
 @keyframes indicator-line {
