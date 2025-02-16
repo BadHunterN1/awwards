@@ -108,10 +108,7 @@ export default function Hero() {
 					<div
 						ref={miniVideoContainerRef}
 						className="mask-clip-path absolute-center absolute z-50 size-44 md:size-64 cursor-pointer overflow-hidden rounded-lg">
-						<div
-							onClick={handleMiniVdClick}
-							className={`origin-center transition-all duration-500 delay-200 ease-in
-                            `}>
+						<div onClick={handleMiniVdClick} className={`origin-center`}>
 							<video
 								loop
 								muted
@@ -393,7 +390,7 @@ function useHook({
 		section.addEventListener("mouseleave", handleMouseLeave);
 		section.addEventListener("mousemove", handleMouseMove);
 
-		window.addEventListener("blur-sm", handleDocumentEvents);
+		window.addEventListener("blur", handleDocumentEvents);
 		document.addEventListener("mouseleave", handleDocumentEvents);
 
 		return () => {
@@ -401,7 +398,7 @@ function useHook({
 			section.removeEventListener("mouseenter", handleMouseEnter);
 			section.removeEventListener("mouseleave", handleMouseLeave);
 			section.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("blur-sm", handleDocumentEvents);
+			window.removeEventListener("blur", handleDocumentEvents);
 			document.removeEventListener("mouseleave", handleDocumentEvents);
 		};
 	}, [isHovered]);
@@ -436,6 +433,15 @@ function useHookVideos({
 	useGSAP(
 		() => {
 			if (!controlVideo.hasClicked) return;
+			gsap.set("#current-video", { opacity: 0, scale: 0 });
+			gsap.to(
+				"#current-video",
+
+				{
+					opacity: 1,
+					scale: 1,
+				}
+			);
 			if (!controlVideo.isNext) {
 				gsap.set("#next-video", { visibility: "visible" });
 				gsap.to("#next-video", {
@@ -488,7 +494,7 @@ function useHookVideos({
 						});
 						setTimeout(() => {
 							setIsInteractable(true);
-						}, 500);
+						}, 1000);
 					},
 				});
 			} else {
@@ -529,27 +535,10 @@ function useHookVideos({
 						});
 						setTimeout(() => {
 							setIsInteractable(true);
-						}, 500);
+						}, 1000);
 					},
 				});
 			}
-
-			gsap.set("#current-video", { opacity: 0 });
-			gsap.fromTo(
-				"#current-video",
-				{
-					transformOrigin: "center center",
-					opacity: 0,
-					duration: 0.2,
-					ease: "power1.inOut",
-				},
-				{
-					opacity: 1,
-					scale: 0.5,
-					duration: 0.2,
-					delay: 1.5,
-				}
-			);
 
 			const tl = gsap.timeline();
 			const currentContainer = document.querySelector(
