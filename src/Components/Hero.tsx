@@ -235,6 +235,7 @@ function useHook({
 	const animationStateRef = useRef<string>("idle");
 
 	useGSAP(() => {
+		//dont change anything down here until i say
 		if (
 			!sectionRef.current ||
 			!miniVideoContainerRef.current ||
@@ -386,10 +387,97 @@ function useHook({
 				handleMouseLeave();
 			}
 		}
+		// Add device orientation handler for mobile
+		function handleDeviceOrientation(event: DeviceOrientationEvent) {
+			if (!isHovered || animationStateRef.current === "leaving") return;
+
+			if (isMouseIdle) {
+				isMouseIdle = false;
+				gsap.to(elements, {
+					scale: config.scale,
+					opacity: 1,
+					duration: 0.7,
+					ease: "power3.out",
+				});
+			}
+
+			clearTimeout(mouseMoveTimeout);
+			mouseMoveTimeout = setTimeout(() => {
+				if (isHovered) {
+					gsap.to([miniContainer], {
+						scale: 0,
+						opacity: 0,
+						rotateX: 0,
+						rotateY: 0,
+						duration: 0.4,
+						ease: "power3.in",
+					});
+					isMouseIdle = true;
+				}
+			}, 700);
+
+			const beta = event.beta || 0;
+			const gamma = event.gamma || 0;
+
+			const rotateX =
+				(Math.max(-30, Math.min(30, beta / 3)) * -config.rotationStrength) / 30;
+			const rotateY =
+				(Math.max(-15, Math.min(15, gamma / 2)) * config.rotationStrength) / 15;
+
+			gsap.to(elements, {
+				rotateX,
+				rotateY,
+				scale: config.scale,
+				duration: config.smoothing,
+				ease: "power2.out",
+				transformPerspective: config.perspective,
+				transformOrigin: "center",
+			});
+		}
+
+		// Handle device orientation permission
+		function setupDeviceOrientation() {
+			if (
+				typeof window.DeviceOrientationEvent !== "undefined" &&
+				"requestPermission" in window.DeviceOrientationEvent
+			) {
+				(
+					DeviceOrientationEvent as unknown as {
+						requestPermission(): Promise<PermissionState>;
+					}
+				)
+					.requestPermission()
+					.then((permissionState: PermissionState) => {
+						if (permissionState === "granted") {
+							window.addEventListener(
+								"deviceorientation",
+								handleDeviceOrientation
+							);
+						}
+					})
+					.catch(console.error);
+			} else {
+				window.addEventListener("deviceorientation", handleDeviceOrientation);
+			}
+		}
 		section.addEventListener("mouseenter", handleMouseEnter);
 		section.addEventListener("mouseleave", handleMouseLeave);
 		section.addEventListener("mousemove", handleMouseMove);
-
+		// Check if device supports orientation events
+		if (window.DeviceOrientationEvent) {
+			const requestPermission = (
+				DeviceOrientationEvent as unknown as {
+					requestPermission(): Promise<PermissionState>;
+				}
+			).requestPermission;
+			if (typeof requestPermission === "function") {
+				section.addEventListener("touchstart", setupDeviceOrientation, {
+					once: true,
+				});
+			} else {
+				window.addEventListener("deviceorientation", handleDeviceOrientation);
+			}
+		}
 		window.addEventListener("blur", handleDocumentEvents);
 		document.addEventListener("mouseleave", handleDocumentEvents);
 
@@ -398,6 +486,21 @@ function useHook({
 			section.removeEventListener("mouseenter", handleMouseEnter);
 			section.removeEventListener("mouseleave", handleMouseLeave);
 			section.removeEventListener("mousemove", handleMouseMove);
+			if (window.DeviceOrientationEvent) {
+				window.removeEventListener(
+					"deviceorientation",
+					handleDeviceOrientation
+				);
+				if (
+					typeof (
+						DeviceOrientationEvent as {
+							requestPermission?: () => Promise<PermissionState>;
+						}
+					).requestPermission === "function"
+				) {
+					section.removeEventListener("touchstart", setupDeviceOrientation);
+				}
+			}
 			window.removeEventListener("blur", handleDocumentEvents);
 			document.removeEventListener("mouseleave", handleDocumentEvents);
 		};
