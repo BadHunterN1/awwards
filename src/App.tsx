@@ -14,7 +14,6 @@ function App() {
 	const [heroLoaded, setHeroLoaded] = useState(false);
 
 	useEffect(() => {
-		// Mark Hero as loaded after initial render
 		setHeroLoaded(true);
 	}, []);
 

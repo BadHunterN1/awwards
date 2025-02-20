@@ -98,11 +98,13 @@ export default function Hero() {
 	useHookVideos(states);
 
 	return (
-		<div ref={sectionRef} className="relative h-dvh w-screen overflow-x-hidden">
+		<div
+			ref={sectionRef}
+			className="relative min-h-screen w-screen overflow-x-hidden">
 			{isLoading && <Loading />}
 			<div
 				ref={videoFrameRef}
-				className="relative z-10 h-dvh w-screen overflow-hidden rounded-b-lg bg-blue-75"
+				className="relative z-10 min-h-screen w-screen overflow-hidden rounded-b-lg bg-blue-75"
 				id="video-frame">
 				<div>
 					<div
